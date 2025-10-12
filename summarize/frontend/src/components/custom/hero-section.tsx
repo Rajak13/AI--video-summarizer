@@ -1,4 +1,17 @@
 import Link from "next/link";
+import type { TImage, TLink } from "@/types";
+
+import { StrapiImage } from "./strapi-image";
+
+export interface IHeroSectionProps {
+  id: number;
+  documentId: string;
+  __component: string;
+  heading: string;
+  subHeading: string;
+  image: TImage;
+  link: TLink;
+}
 
 const styles = {
   header: "relative h-[600px] overflow-hidden",
@@ -11,23 +24,19 @@ const styles = {
     "mt-8 inline-flex items-center justify-center px-6 py-3 text-base font-medium text-black bg-white rounded-md shadow hover:bg-gray-100 transition-colors",
 };
 
-export function HeroSection({ data }: { readonly data: any }) {
+export function HeroSection({ data }: { data: IHeroSectionProps }) {
   if (!data) return null;
 
-  const { heading, subHeading, link } = data;
+  const { heading, subHeading, image, link } = data;
 
   console.dir(data, { depth: null });
   return (
     <header className={styles.header}>
-      <img
-        alt="Background"
-        className={styles.backgroundImage}
+      <StrapiImage
+        alt={image.alternativeText ?? "no alternative text"}
+        className="absolute inset-0 object-cover w-full h-full aspect/16:9"
+        src={image.url}
         height={1080}
-        src="https://images.pexels.com/photos/7552374/pexels-photo-7552374.jpeg"
-        style={{
-          aspectRatio: "1920/1080",
-          objectFit: "cover",
-        }}
         width={1920}
       />
       <div className={styles.overlay}>
