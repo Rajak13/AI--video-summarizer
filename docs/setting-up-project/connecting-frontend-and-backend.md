@@ -14,28 +14,28 @@ As we are using **Strapi** for our backend and **Nextjs** for the frontend, inte
 
 - 3. Making a Fetch Request.
     - We can make a fetch request by refactoring out app/page.tsx file as:
-    ``tsx
+    ```tsx
     async function getStrapiData(url: string) {
-  const baseUrl = "http://localhost:1337";
-  try {
-    const response = await fetch(baseUrl + url);
-    const data = await response.json();
-    return data;
-  } catch (error) {
+    const baseUrl = "http://localhost:1337";
+    try {
+        const response = await fetch(baseUrl + url);
+        const data = await response.json();
+        return data;
+    } catch (error) {
     console.error(error);
-  }
-}
+    }
+    }
 
-export default async function Home() {
-  const strapiData = await getStrapiData("/api/home-page");
+    export default async function Home() {
+    const strapiData = await getStrapiData("/api/home-page");
 
-  const { title, description } = strapiData.data;
+    const { title, description } = strapiData.data;
 
-  return (
-    <main className="container mx-auto py-6">
-      <h1 className="text-5xl font-bold">{title}</h1>
-      <p className="text-xl mt-4">{description}</p>
-    </main>
-  );
-}
-``
+    return (
+        <main className="container mx-auto py-6">
+        <h1 className="text-5xl font-bold">{title}</h1>
+        <p className="text-xl mt-4">{description}</p>
+        </main>
+    );
+    }
+    ```
