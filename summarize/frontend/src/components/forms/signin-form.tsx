@@ -1,4 +1,8 @@
 "use client";
+import { loginUserAction } from "@/data/actions/auth";
+import { useActionState } from "react";
+import { type FormState } from "@/data/validation/auth";
+
 import Link from "next/link";
 
 import {
@@ -12,7 +16,10 @@ import {
 
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { SubmitButton } from "@/components/custom/submit-button";
+
+import { ZodErrors } from "@/components/custom/zod-errors";
+import { StrapiErrors } from "@/components/custom/strapi-errors";
 
 const styles = {
   container: "w-full max-w-md",
@@ -26,10 +33,25 @@ const styles = {
   link: "ml-2 text-pink-500",
 };
 
+const INITIAL_STATE: FormState = {
+  success: false,
+  message: undefined,
+  strapiErrors: null,
+  zodErrors: null,
+};
+
 export function SigninForm() {
+  const [formState, formAction] = useActionState(
+    loginUserAction,
+    INITIAL_STATE
+  );
+
+  console.log("🔍 SigninForm - formAction:", typeof formAction);
+  console.log("🔍 SigninForm - formState:", formState);
+
   return (
     <div className={styles.container}>
-      <form>
+      <form action={formAction} method="POST">
         <Card>
           <CardHeader className={styles.header}>
             <CardTitle className={styles.title}>Sign In</CardTitle>
@@ -39,13 +61,15 @@ export function SigninForm() {
           </CardHeader>
           <CardContent className={styles.content}>
             <div className={styles.fieldGroup}>
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">Username or Email</Label>
               <Input
                 id="identifier"
                 name="identifier"
                 type="text"
                 placeholder="username or email"
+                defaultValue={formState?.data?.identifier || ""}
               />
+              <ZodErrors error={formState?.zodErrors?.identifier} />
             </div>
             <div className={styles.fieldGroup}>
               <Label htmlFor="password">Password</Label>
@@ -54,11 +78,18 @@ export function SigninForm() {
                 name="password"
                 type="password"
                 placeholder="password"
+                defaultValue={formState?.data?.password || ""}
               />
+              <ZodErrors error={formState?.zodErrors?.password} />
             </div>
           </CardContent>
           <CardFooter className={styles.footer}>
-            <Button className={styles.button}>Sign In</Button>
+            <SubmitButton
+              className="w-full"
+              text="Sign In"
+              loadingText="Loading"
+            />
+            <StrapiErrors error={formState?.strapiErrors} />
           </CardFooter>
         </Card>
         <div className={styles.prompt}>

@@ -97,3 +97,64 @@ export async function loginUserService(
     throw error;
   }
 }
+
+export async function getUserMeService(): Promise<TStrapiResponse<TAuthUser>> {
+  const authToken = await actions.auth.getAuthTokenAction();
+
+  if (!authToken)
+    return { success: false, data: undefined, error: undefined, status: 401 };
+
+  const url = new URL("/api/users/me", baseUrl);
+
+  try {
+    const response = await fetch(url.href, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+    const data = await response.json();
+    if (data.error)
+      return {
+        success: false,
+        data: undefined,
+        error: data.error,
+        status: response.status,
+      };
+    return {
+      success: true,
+      data: data,
+      error: undefined,
+      status: response.status,
+    };
+  } catch (error) {
+    console.log(error);
+    return {
+      success: false,
+      data: undefined,
+      error: {
+        status: 500,
+        name: "NetworkError",
+        message:
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred",
+        details: {},
+      },
+      status: 500,
+    };
+  }
+}
+
+export async function getAuthTokenAction() {
+  const cookieStore = await cookies();
+  const authToken = cookieStore.get("jwt")?.value;
+  return authToken;
+}
+
+export async function logoutUserAction() {
+  const cookieStore = await cookies();
+  cookieStore.set("jwt", "", { ...config, maxAge: 0 });
+  redirect("/");
+}
