@@ -1,5 +1,5 @@
 import qs from "qs";
-import type { TStrapiResponse, THomePage, TGlobal } from "@/types";
+import type { TStrapiResponse, THomePage, TGlobal, TMetaData } from "@/types";
 
 import { api } from "@/data/data-api";
 import { getStrapiURL } from "@/lib/utils";
@@ -52,7 +52,17 @@ async function getGlobalData(): Promise<TStrapiResponse<TGlobal>> {
   url.search = query;
   return api.get<TGlobal>(url.href);
 }
+async function getMetaData(): Promise<TStrapiResponse<TMetaData>> {
+  const query = qs.stringify({
+    fields: ["title", "description"],
+  });
+
+  const url = new URL("/api/global", baseUrl);
+  url.search = query;
+  return api.get<TMetaData>(url.href);
+}
 export const loaders = {
   getHomePageData,
   getGlobalData,
+  getMetaData
 };
